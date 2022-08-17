@@ -32,7 +32,7 @@
                 </DrawingBrush>
             </Rectangle.Fill>
         </Rectangle>
-        <math:FormulaControl Canvas.Top="-110" Canvas.Left="120" Width="380" HorizontalContentAlignment="Center" Formula="{Binding Q_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" Margin="0" Visibility="{Binding IsLoadOnTop, Converter={StaticResource VisibleOnTrueConverter}}">
+        <math:FormulaControl Canvas.Top="-80" Canvas.Left="120" Width="380" HorizontalContentAlignment="Center" Formula="{Binding Q_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" Margin="0" Visibility="{Binding IsLoadOnTop, Converter={StaticResource VisibleOnTrueConverter}}">
             <math:FormulaControl.RenderTransform>
                 <TransformGroup>
                 </TransformGroup>

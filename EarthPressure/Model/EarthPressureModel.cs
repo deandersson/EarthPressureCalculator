@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace EarthPressure.Model
 {
-    [Serializable]
+    [DataContract]
     public class EarthPressureModel
     {
         // Properties
 
+        [DataMember]
         public LOAD_TYPE SelectedLoadType;
 
         public enum LOAD_TYPE
@@ -16,11 +18,17 @@ namespace EarthPressure.Model
         }
 
         // Coefficients
+        [DataMember]
         public double GammaM { get; set; }
+
+        [DataMember]
         public double GammaRd { get; set; }
 
         // Materialdensities
+        [DataMember]
         private double _gammaWater;
+
+        [DataMember]
         private double _gammaPrime;
         public double GammaPrime
         {
@@ -33,6 +41,8 @@ namespace EarthPressure.Model
                 }
             }
         }
+
+        [DataMember]
         private double _gammaPrimeU;
         public double GammaPrimeU
         {
@@ -47,6 +57,7 @@ namespace EarthPressure.Model
         }
 
         // Waterlevel
+        [DataMember]
         private double _uZ;
         public double UZ
         {
@@ -61,6 +72,7 @@ namespace EarthPressure.Model
         }
 
         // Wallheight
+        [DataMember]
         private double _h;
         public double H
         {
@@ -75,6 +87,7 @@ namespace EarthPressure.Model
         }
 
         // Load on top of soil
+        [DataMember]
         private double _q;
         public double Q
         {
@@ -89,7 +102,9 @@ namespace EarthPressure.Model
         }
 
         // Soil properties
+        [DataMember]
         private double _phi;
+        [DataMember]
         private double _phiRad;
         public double Phi
         {

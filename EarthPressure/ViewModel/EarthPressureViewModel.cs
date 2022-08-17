@@ -38,7 +38,7 @@ namespace EarthPressure.ViewModel
             OnPropertyChanged(null);
         }
 
-        public void LoadModel(EarthPressureModel model)
+        internal void SetModel(EarthPressureModel? model)
         {
             _model = model;
             OnPropertyChanged(null);
