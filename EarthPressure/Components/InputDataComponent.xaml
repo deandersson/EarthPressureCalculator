@@ -4,9 +4,70 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EarthPressure.Components"
+             xmlns:math="clr-namespace:WpfMath.Controls;assembly=WpfMath"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="700" d:DesignWidth="800" d:Background="White">
+
+    <!-- Input Data -->
+    <StackPanel Orientation="Vertical">
+
+        <!-- Gamma RD -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="\gamma_R_d" Style="{StaticResource FormulaStyle}"/>
+            <TextBox Text="{Binding GammaRd, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+        </StackPanel>
+
+        <!-- Gamma M -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="\gamma_M" Style="{StaticResource FormulaStyle}"/>
+            <TextBox Text="{Binding GammaM, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+        </StackPanel>
+
+        <!-- Wall Height -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="z" Style="{StaticResource FormulaStyle}" Scale="15"/>
+            <TextBox Text="{Binding H, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+            <math:FormulaControl Formula="[m]" Style="{StaticResource Unit}"/>
+        </StackPanel>
+
+        <!-- Load on soil -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="q" Style="{StaticResource FormulaStyle}" Scale="15"/>
+            <TextBox Text="{Binding Q, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+            <math:FormulaControl Formula="[kN/m^2]" Style="{StaticResource Unit}"/>
+        </StackPanel>
+
+        <!-- Water level -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="U_z" Style="{StaticResource FormulaStyle}" Scale="15"/>
+            <TextBox Text="{Binding UZ, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+            <math:FormulaControl Formula="[m]" Style="{StaticResource Unit}"/>
+        </StackPanel>
+
+        <!-- Soil Density -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="\gamma'" Style="{StaticResource FormulaStyle}"/>
+            <TextBox Text="{Binding GammaPrime, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+            <math:FormulaControl Formula="[kN/m^3]" Style="{StaticResource Unit}"/>
+        </StackPanel>
+
+        <!-- Soil Density Under water -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="\gamma'_u" Style="{StaticResource FormulaStyle}"/>
+            <TextBox Text="{Binding GammaPrimeU, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+            <math:FormulaControl Formula="[kN/m^3]" Style="{StaticResource Unit}"/>
+        </StackPanel>
+
+        <!-- Phi -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <math:FormulaControl Formula="\varphi" Style="{StaticResource FormulaStyle}"/>
+            <TextBox Text="{Binding Phi, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
+            <math:FormulaControl Formula="[deg]" Style="{StaticResource Unit}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Height="35" Margin="5" VerticalAlignment="Center" >
+            <RadioButton x:Name="rb_ActiveLoad" Width="100" VerticalAlignment="Center" Command="{Binding SelectActiveLoadCommand}" IsChecked="True">Active Load</RadioButton>
+            <RadioButton x:Name="rb_LoadAtRest" Width="100" VerticalAlignment="Center" Command="{Binding SelectLoadAtRestCommand}">Load at rest</RadioButton>
+        </StackPanel>
+    </StackPanel>
 </UserControl>

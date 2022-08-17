@@ -3,69 +3,108 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows;
 using EarthPressure.Model;
+using EarthPressureCalculator.Commands;
+using System.Windows.Input;
 
 namespace EarthPressure.ViewModel
 {
-    internal class EarthPressureViewModel : ObservableObject
+    public class EarthPressureViewModel : ViewModelBase
     {
 
         private EarthPressureModel _model;
 
-        public EarthPressureModel Model { get { return _model; }}
+        public ICommand SelectActiveLoadCommand { get; }
+        public ICommand SelectLoadAtRestCommand { get; }
+        public ICommand SaveCommand { get; }
+        public ICommand LoadCommand { get; }
 
-        public EarthPressureViewModel()
+        
+
+        public EarthPressureViewModel(EarthPressureModel model)
         {
-            _model = new EarthPressureModel();
-            H = 4;
-            UZ = 3;
+            _model = model;
+            SelectActiveLoadCommand = new RelayCommand(SetActiveLoad);
+            SelectLoadAtRestCommand = new RelayCommand(SetLoadAtRest);
+            SaveCommand = new SaveCommand(_model);
+            LoadCommand = new LoadCommand(this);
             OnPropertyChanged(null);
         }
 
+        private void SetActiveLoad(object parameter) => SetLoadType(EarthPressureModel.LOAD_TYPE.ACTIVE_LOAD);
+        private void SetLoadAtRest(object parameter) => SetLoadType(EarthPressureModel.LOAD_TYPE.LOAD_AT_REST);
+        private void SetLoadType(EarthPressureModel.LOAD_TYPE loadType)
+        {
+            _model.SelectedLoadType = loadType;
+            OnPropertyChanged(null);
+        }
+
+        public void LoadModel(EarthPressureModel model)
+        {
+            _model = model;
+            OnPropertyChanged(null);
+        }
+
+        // Input data properties
         public double GammaRd
         {
-            get { return _model.GammaRd; }
-            set { _model.GammaRd = value; OnPropertyChanged(null); }
+            get
+            {
+                return _model.GammaRd;
+            }
+            set
+            {
+                _model.GammaRd = value;
+                OnPropertyChanged(null);
+            }
         }
-
         public double GammaM
         {
-            get { return _model.GammaM; }
-            set { _model.GammaM = value; OnPropertyChanged(null); }
+            get
+            {
+                return _model.GammaM;
+            }
+            set
+            {
+                _model.GammaM = value;
+                OnPropertyChanged(null);
+            }
         }
-
-        private double _h;
         public double H
         {
             get
             {
-                return _h;
+                return _model.H;
             }
             set
             {
-                _h = value; OnPropertyChanged(null);
+                _model.H = value;
+                OnPropertyChanged(null);
             }
         }
-
-        private double _uz;
+        public double Q
+        {
+            get
+            {
+                return _model.Q;
+            }
+            set
+            {
+                _model.Q = value;
+                OnPropertyChanged(null);
+            }
+        }
         public double UZ
         {
             get
             {
-                return _uz;
+                return _model.UZ;
             }
             set
             {
-                _uz = value; OnPropertyChanged(null);
+                _model.UZ = value;
+                OnPropertyChanged(null);
             }
         }
-        public double Hmm
-        {
-            get
-            {
-                return _h*1000;
-            }
-        }
-
         public double GammaPrime
         {
             get
@@ -78,16 +117,24 @@ namespace EarthPressure.ViewModel
                 OnPropertyChanged(null);
             }
         }
-
         public double GammaPrimeU
         {
-            get { return (_model.GammaPrimeU); }
-            set { _model.GammaPrimeU = value; OnPropertyChanged(null); }
+            get
+            {
+                return (_model.GammaPrimeU);
+            }
+            set
+            {
+                _model.GammaPrimeU = value;
+                OnPropertyChanged(null);
+            }
         }
-
         public double Phi
         {
-            get { return _model.Phi; }
+            get
+            {
+                return _model.Phi;
+            }
             set
             {
                 _model.Phi = value;
@@ -95,86 +142,87 @@ namespace EarthPressure.ViewModel
             }
         }
 
-        public double PhiD
-        {
-            get { return _model.PhiD; }
-        }
-
-        public bool IsWaterAboveBottom
-        {
-            get
-            {
-                return UZ < H;
-            }
-        }
-
+        // Formulas
+        #region Formulas
         public string PhiD_Formula
         {
             get { return $"\\varphi_d = atan \\left( \\frac{{tan(\\varphi)}}{{\\gamma_M}} \\right) = {_model.PhiD:F3} deg"; }
         }
-
+        public string K_Formula
+        {
+            get
+            {
+                switch (_model.SelectedLoadType)
+                {
+                    case EarthPressureModel.LOAD_TYPE.ACTIVE_LOAD:
+                        return Ka_Formula;
+                    case EarthPressureModel.LOAD_TYPE.LOAD_AT_REST:
+                        return K0_Formula;
+                    default:
+                        return "ERROR";
+                }
+            }
+        }
         public string K0_Formula
         {
             get { return $"K_0 = 1 - sin(\\varphi_d) = {_model.K0:F3}"; }
         }
-
         public string Ka_Formula
         {
             get { return $"K_a = tan \\left( 45 deg - \\frac{{\\varphi_d}}{{2}} \\right) = {_model.Ka:F3}"; }
         }
-
-        public string LoadAtTop_Formula
-        {
-            get { return $"Q_0 = {_model.getActiveLoad(0):F3} kN/m^2"; }
-        }
-
-        public string LoadAtWater_Formula
-        {
-            get { return $"Q_U_z = {_model.getActiveLoad(UZ):F3} kN/m^2"; }
-        }
-
-        public string LoadAtBottom_Formula
-        {
-            get { return $"Q_H = {_model.getActiveLoad(H):F3} kN/m^2"; }
-        }
-
-
-        private double scale = 1;
-
-        // Drawing properties
-        public PathGeometry WallGeometry
+        public string z_Formula
         {
             get
             {
-                PathGeometry _geometry = new PathGeometry();
-
-                // Wall figure
-                List<LineSegment> segments = new List<LineSegment>();
-                segments.Add(new LineSegment(new Point(200,0), true));
-                segments.Add(new LineSegment(new Point(200, H*1000), true));
-                segments.Add(new LineSegment(new Point(0, H*1000), true));
-                _geometry.Figures.Add(new PathFigure(new Point(0, 0), segments, true));
-
-                return _geometry;
+                return $"z = {_model.H:F3}m";
             }
         }
+        public string Uz_Formula
+        {
+            get
+            {
+                return $"U_z = {_model.UZ:F3}m";
+            }
+        }
+        public string Q_Formula
+        {
+            get
+            {
+                return $"q = {_model.Q:F3}kN/m^2";
+            }
+        }
+        public string LoadAtTop_Formula
+        {
+            get { return $"Q_0 = {_model.GetLoad(0):F3} kN/m^2"; }
+        }
+        public string LoadAtWater_Formula
+        {
+            get { return $"Q_U_z = {_model.GetLoad(_model.UZ):F3} kN/m^2"; }
+        }
+        public string LoadAtBottom_Formula
+        {
+            get { return $"Q_H = {_model.GetLoad(_model.H):F3} kN/m^2"; }
+        }
+        #endregion
 
+        // Graphics properties
+        private double scale = 1;
         public PathGeometry LoadGeometryNoWater
         {
             get
             {
                 PathGeometry _geometry = new PathGeometry();
 
-                // Wall figure
                 List<LineSegment> segments = new List<LineSegment>();
-                segments.Add(new LineSegment(new Point(_model.getActiveLoad(H)*scale, 500), true));
+                segments.Add(new LineSegment(new Point(_model.GetLoad(0) * scale, 0), true));
+                segments.Add(new LineSegment(new Point(_model.GetLoad(_model.H) * scale, 500), true));
                 segments.Add(new LineSegment(new Point(0, 500), true));
                 _geometry.Figures.Add(new PathFigure(new Point(0, 0), segments, true));
 
                 return _geometry;
             }
         }
-
         public PathGeometry LoadGeometryWithWater
         {
             get
@@ -183,63 +231,41 @@ namespace EarthPressure.ViewModel
 
                 // Wall figure
                 List<PathSegment> segments = new List<PathSegment>();
-                segments.Add(new LineSegment(new Point(_model.getActiveLoad(UZ) * scale, WaterLevelPosition), true));
+                segments.Add(new LineSegment(new Point(_model.GetLoad(0) * scale, 0), true));
+                segments.Add(new LineSegment(new Point(_model.GetLoad(_model.UZ) * scale, WaterLevelPosition), true));
                 segments.Add(new LineSegment(new Point(0, WaterLevelPosition), true));
-                segments.Add(new LineSegment(new Point(_model.getActiveLoad(UZ) * scale, WaterLevelPosition), false));
-                segments.Add(new LineSegment(new Point(_model.getActiveLoad(H) * scale, 500), true));
+                segments.Add(new LineSegment(new Point(_model.GetLoad(_model.UZ) * scale, WaterLevelPosition), false));
+                segments.Add(new LineSegment(new Point(_model.GetLoad(_model.H) * scale, 500), true));
                 segments.Add(new LineSegment(new Point(0, 500), true));
                 _geometry.Figures.Add(new PathFigure(new Point(0, 0), segments, true));
 
                 return _geometry;
             }
         }
-
         public double WaterLevelPosition
         {
             get
             {
-                return 500 * UZ / H;
+                return 500 * _model.UZ / _model.H;
             }
         }
 
-        public double CanvasHeight
+        // Converters
+        public bool IsWaterAboveBottom
         {
             get
             {
-                return H*1000;
+                return _model.UZ < _model.H;
             }
         }
 
-        public double CanvasWidth
+        public bool IsLoadOnTop
         {
             get
             {
-                return 2000;
+                return _model.Q > 0;
             }
         }
 
-        public double CanvasFontSize
-        {
-            get
-            {
-                return H/2 * 50;
-            }
-        }
-
-        public double WallHeight
-        {
-            get
-            {
-                return 500;
-            }
-        }
-
-        public double WallWidth
-        {
-            get
-            {
-                return 500 / (H*5);
-            }
-        }
     }
 }

@@ -9,15 +9,15 @@ using System.Windows.Data;
 
 namespace EarthPressure.Converters
 {
-    internal class IsWaterBelowBottom : IValueConverter
+    internal class VisibleOnTrue : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool isWaterAboveBottom = (bool)value;
-            if (isWaterAboveBottom)
-                return Visibility.Collapsed;
-            else
+            bool check = (bool)value;
+            if (check)
                 return Visibility.Visible;
+            else
+                return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

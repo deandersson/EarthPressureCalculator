@@ -3,10 +3,35 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:math="clr-namespace:WpfMath.Controls;assembly=WpfMath"
              xmlns:local="clr-namespace:EarthPressure.Components"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="700" d:DesignWidth="800" d:Background="White">
+    
+    <StackPanel Orientation="Vertical">
+        <!-- PhiD -->
+        <StackPanel Orientation="Horizontal" Height="60">
+            <math:FormulaControl Formula="{Binding PhiD_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
+        </StackPanel>
+
+        <!-- K -->
+        <StackPanel Orientation="Horizontal" Height="60">
+            <math:FormulaControl Formula="{Binding K_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
+        </StackPanel>
+
+        <!-- LoatAtTop -->
+        <StackPanel Orientation="Horizontal" Height="60">
+            <math:FormulaControl Formula="{Binding LoadAtTop_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
+        </StackPanel>
+
+        <!-- LoadAtWater -->
+        <StackPanel Orientation="Horizontal" Height="60" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}">
+            <math:FormulaControl Formula="{Binding LoadAtWater_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
+        </StackPanel>
+
+        <!-- LoadAtBottom -->
+        <StackPanel Orientation="Horizontal" Height="60">
+            <math:FormulaControl Formula="{Binding LoadAtBottom_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
+        </StackPanel>
+    </StackPanel>
 </UserControl>

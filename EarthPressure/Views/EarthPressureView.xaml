@@ -4,233 +4,34 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EarthPressure.Views"
-             xmlns:controls="clr-namespace:WpfMath.Controls;assembly=WpfMath"
-             xmlns:converters="clr-namespace:EarthPressure.Converters"
+             xmlns:components="clr-namespace:EarthPressure.Components"
              mc:Ignorable="d" 
              MouseDown="UserControl_MouseDown"
              d:DesignHeight="700" d:DesignWidth="800" d:Background="White" >
-
-    <UserControl.Resources>
-        <Style TargetType="TextBlock">
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Width" Value="50" />
-            <Setter Property="FontSize" Value="15" />
-        </Style>
-        <Style x:Key="FormulaStyle" TargetType="controls:FormulaControl">
-            <Setter Property="Margin" Value="7" />
-            <Setter Property="Width" Value="100" />
-            <Setter Property="Scale" Value="20" />
-            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-            <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
-            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-
-        <Style x:Key="Unit" TargetType="controls:FormulaControl">
-            <Setter Property="Margin" Value="7" />
-            <Setter Property="Width" Value="100" />
-            <Setter Property="Scale" Value="15" />
-            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-            <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
-            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-
-        <Style x:Key="Calculation" TargetType="controls:FormulaControl">
-            <Setter Property="Margin" Value="7" />
-            <Setter Property="Width" Value="300" />
-            <Setter Property="Scale" Value="20" />
-            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-            <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
-            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        
-        <Style TargetType="TextBox">
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Width" Value="100" />
-            <Setter Property="FontSize" Value="15" />
-        </Style>
-
-        <converters:IsWaterAboveBottom x:Key="IsWaterAboveBottomConverter"/>
-        <converters:IsWaterBelowBottom x:Key="IsWaterBelowBottomConverter"/>
-    </UserControl.Resources>
     
     <Grid Name="main_grid" Focusable="True">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="350"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Input Data -->
-        <StackPanel Orientation="Vertical" Grid.Column="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <!-- Gamma RD -->
-            <StackPanel Orientation="Horizontal" Height="35">
-                <controls:FormulaControl Formula="\gamma_R_d" Style="{StaticResource FormulaStyle}"/>
-                <TextBox Text="{Binding GammaRd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
-            </StackPanel>
-            
-            <!-- Gamma M -->
-            <StackPanel Orientation="Horizontal" Height="35">
-                <controls:FormulaControl Formula="\gamma_M" Style="{StaticResource FormulaStyle}"/>
-                <TextBox Text="{Binding GammaM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
-            </StackPanel>
+        <GroupBox Header="Input:" BorderBrush="{StaticResource BorderPrimary}" BorderThickness="1" Margin="5" Grid.Row="0"> 
+            <components:InputDataView />
+        </GroupBox>
 
-            <!-- Wall Height -->
-            <StackPanel Orientation="Horizontal" Height="35">
-                <controls:FormulaControl Formula="Height" Style="{StaticResource FormulaStyle}" Scale="15"/>
-                <TextBox Text="{Binding H, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}"/>
-                <controls:FormulaControl Formula="[m]" Style="{StaticResource Unit}"/>
-            </StackPanel>
+        <GroupBox Header="Result:" BorderBrush="{StaticResource BorderPrimary}" BorderThickness="1" Margin="5" Grid.Row="1">
+            <components:EquationsView />
+        </GroupBox>
 
-            <!-- Water level -->
-            <StackPanel Orientation="Horizontal" Height="35">
-                <controls:FormulaControl Formula="WaterLevel" Style="{StaticResource FormulaStyle}" Scale="15"/>
-                <TextBox Text="{Binding UZ, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
-                <controls:FormulaControl Formula="[m]" Style="{StaticResource Unit}"/>
-            </StackPanel>
-
-            <!-- Soil Density -->
-            <StackPanel Orientation="Horizontal" Height="35">
-                <controls:FormulaControl Formula="\gamma'" Style="{StaticResource FormulaStyle}"/>
-                <TextBox Text="{Binding GammaPrime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
-                <controls:FormulaControl Formula="[kN/m^3]" Style="{StaticResource Unit}"/>
-            </StackPanel>
-
-            <!-- Soil Density Under water -->
-            <StackPanel Orientation="Horizontal" Height="35">
-                <controls:FormulaControl Formula="\gamma'_u" Style="{StaticResource FormulaStyle}"/>
-                <TextBox Text="{Binding GammaPrimeU, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
-                <controls:FormulaControl Formula="[kN/m^3]" Style="{StaticResource Unit}"/>
-            </StackPanel>
-
-            <!-- Phi -->
-            <StackPanel Orientation="Horizontal" Height="35">
-                <controls:FormulaControl Formula="\varphi" Style="{StaticResource FormulaStyle}"/>
-                <TextBox Text="{Binding Phi, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"/>
-                <controls:FormulaControl Formula="[deg]" Style="{StaticResource Unit}"/>
-            </StackPanel>
-
-            <!-- PhiD -->
-            <StackPanel Orientation="Horizontal" Height="60" Margin="0 50 0 0">
-                <controls:FormulaControl Formula="{Binding PhiD_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-            </StackPanel>
-
-            <!-- K0 -->
-            <StackPanel Orientation="Horizontal" Height="60">
-                <controls:FormulaControl Formula="{Binding K0_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-            </StackPanel>
-
-            <!-- Ka -->
-            <StackPanel Orientation="Horizontal" Height="60">
-                <controls:FormulaControl Formula="{Binding Ka_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-            </StackPanel>
-
-            <!-- LoatAtTop -->
-            <StackPanel Orientation="Horizontal" Height="60">
-                <controls:FormulaControl Formula="{Binding LoadAtTop_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-            </StackPanel>
-
-            <!-- LoadAtWater -->
-            <StackPanel Orientation="Horizontal" Height="60" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource IsWaterAboveBottomConverter}}">
-                <controls:FormulaControl Formula="{Binding LoadAtWater_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-            </StackPanel>
-
-            <!-- LoadAtBottom -->
-            <StackPanel Orientation="Horizontal" Height="60">
-                <controls:FormulaControl Formula="{Binding LoadAtBottom_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-            </StackPanel>
-
-        </StackPanel>
-
-        <!-- Drawing -->
-        <Canvas Grid.Column="1" Margin="50">
-            <Rectangle Height="500" Width="20" Stroke="Black" Canvas.Left="0" Canvas.Top="0" StrokeThickness="1">
-                <Rectangle.Fill>
-                    <DrawingBrush TileMode="Tile" Stretch="None" Viewport="0,0,20,20" ViewportUnits="Absolute">
-                        <DrawingBrush.Drawing>
-                            <GeometryDrawing Brush="LightBlue">
-                                <GeometryDrawing.Geometry>
-                                    <GeometryGroup>
-                                        <LineGeometry StartPoint="0,0" EndPoint="50, -50" />
-                                    </GeometryGroup>
-                                </GeometryDrawing.Geometry>
-                                <GeometryDrawing.Pen>
-                                    <Pen Thickness="1" Brush="Gray" />
-                                </GeometryDrawing.Pen>
-                            </GeometryDrawing>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-            
-            <Path StrokeMiterLimit="0" StrokeThickness="2" Stroke="Black" d:Data="M 0 0 l 50 500 l -50 0 Z" Data="{Binding LoadGeometryNoWater}" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource IsWaterBelowBottomConverter}}">
-                <Path.RenderTransform>
-                    <TranslateTransform X="50" />
-                </Path.RenderTransform>
-                <RenderOptions.EdgeMode>Aliased</RenderOptions.EdgeMode>
-                <Path.Fill>
-                    <DrawingBrush TileMode="Tile" Stretch="None" Viewport="0,0,100,30" ViewportUnits="Absolute">
-                        <DrawingBrush.Drawing>
-                            <GeometryDrawing Brush="LightBlue">
-                                <GeometryDrawing.Geometry>
-                                    <GeometryGroup>
-                                        <LineGeometry StartPoint="0,0" EndPoint="100, 0" />
-                                        <LineGeometry StartPoint="0,0" EndPoint="5, 5"/>
-                                        <LineGeometry StartPoint="0,0" EndPoint="5, -5"/>
-                                    </GeometryGroup>
-                                </GeometryDrawing.Geometry>
-                                <GeometryDrawing.Pen>
-                                    <Pen Thickness="1" Brush="Gray" />
-                                </GeometryDrawing.Pen>
-                            </GeometryDrawing>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Path.Fill>
-            </Path>
-
-            <Path StrokeMiterLimit="0" StrokeThickness="2" Stroke="Black" Data="{Binding LoadGeometryWithWater}" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource IsWaterAboveBottomConverter}}">
-                <Path.RenderTransform>
-                    <TranslateTransform X="50" />
-                </Path.RenderTransform>
-                <Path.Fill>
-                    <DrawingBrush TileMode="Tile" Stretch="None" Viewport="0,0,100,30" ViewportUnits="Absolute">
-                        <DrawingBrush.Drawing>
-                            <GeometryDrawing Brush="LightBlue">
-                                <GeometryDrawing.Geometry>
-                                    <GeometryGroup>
-                                        <LineGeometry StartPoint="0,0" EndPoint="100, 0" />
-                                        <LineGeometry StartPoint="0,0" EndPoint="5, 5"/>
-                                        <LineGeometry StartPoint="0,0" EndPoint="5, -5"/>
-                                    </GeometryGroup>
-                                </GeometryDrawing.Geometry>
-                                <GeometryDrawing.Pen>
-                                    <Pen Thickness="1" Brush="Gray" />
-                                </GeometryDrawing.Pen>
-                            </GeometryDrawing>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Path.Fill>
-            </Path>
-            
-            <controls:FormulaControl Canvas.Top="0" Canvas.Left="150" Formula="{Binding LoadAtTop_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-            <controls:FormulaControl Canvas.Top="{Binding WaterLevelPosition}" Canvas.Left="150" Formula="{Binding LoadAtWater_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource IsWaterAboveBottomConverter}}" RenderTransformOrigin="0.5,0.5" >
-                <controls:FormulaControl.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform/>
-                        <TranslateTransform Y="-50"/>
-                    </TransformGroup>
-                </controls:FormulaControl.RenderTransform>
-            </controls:FormulaControl>
-            <controls:FormulaControl Canvas.Top="450" Canvas.Left="150" Formula="{Binding LoadAtBottom_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
-
-        </Canvas>
-        <!--</Viewbox>-->
-        
+        <GroupBox BorderBrush="{StaticResource BorderPrimary}" BorderThickness="1" Margin="5" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+            <components:GraphicsView />
+        </GroupBox>
 
     </Grid>
 </UserControl>

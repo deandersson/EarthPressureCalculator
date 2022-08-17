@@ -2,61 +2,26 @@
 
 namespace EarthPressure.Model
 {
+    [Serializable]
     public class EarthPressureModel
     {
         // Properties
-        private double _gammaWater = 10.0;
-        private double _gammaM = 1.3;
-        public double GammaM
+
+        public LOAD_TYPE SelectedLoadType;
+
+        public enum LOAD_TYPE
         {
-            get
-            {
-                return _gammaM;
-            }
-            set
-            {
-                _gammaM = value;
-                updateProperties();
-            }
+            ACTIVE_LOAD,
+            LOAD_AT_REST
         }
-        private double _gammaRd = 1.0;
-        public double GammaRd
-        {
-            get
-            {
-                return _gammaRd;
-            }
-            set
-            {
-                _gammaRd = value;
-                updateProperties();
-            }
-        }
-        private double _uZ = 2;
-        public double UZ
-        {
-            get { return _uZ; }
-            set
-            {
-                if (value >= 0)
-                {
-                    _uZ = value;
-                }
-            }
-        }
-        private double _q = 0;
-        public double Q
-        {
-            get { return _q; }
-            set
-            {
-                if (value >= 0)
-                {
-                    _q = value;
-                }
-            }
-        }
-        private double _gammaPrime = 20;
+
+        // Coefficients
+        public double GammaM { get; set; }
+        public double GammaRd { get; set; }
+
+        // Materialdensities
+        private double _gammaWater;
+        private double _gammaPrime;
         public double GammaPrime
         {
             get { return _gammaPrime; }
@@ -68,7 +33,7 @@ namespace EarthPressure.Model
                 }
             }
         }
-        private double _gammaPrimeU = 14;
+        private double _gammaPrimeU;
         public double GammaPrimeU
         {
             get { return _gammaPrimeU; }
@@ -80,9 +45,52 @@ namespace EarthPressure.Model
                 }
             }
         }
+
+        // Waterlevel
+        private double _uZ;
+        public double UZ
+        {
+            get { return _uZ; }
+            set
+            {
+                if (value >= 0)
+                {
+                    _uZ = value;
+                }
+            }
+        }
+
+        // Wallheight
+        private double _h;
+        public double H
+        {
+            get { return _h; }
+            set
+            {
+                if (value >= 0)
+                {
+                    _h = value;
+                }
+            }
+        }
+
+        // Load on top of soil
+        private double _q;
+        public double Q
+        {
+            get { return _q; }
+            set
+            {
+                if (value >= 0)
+                {
+                    _q = value;
+                }
+            }
+        }
+
+        // Soil properties
         private double _phi;
         private double _phiRad;
-        private double _phiDRad;
         public double Phi
         {
             get { return _phi; }
@@ -91,56 +99,76 @@ namespace EarthPressure.Model
                 if (value > 0)
                 {
                     _phi = value;
-                    updateProperties();
+                    _phiRad = ConvertDegreesToRadians(_phi);
                 }
             }
         }
-        private double _phiD;
+
+        private double PhiDRad
+        {
+            get
+            {
+                return Math.Atan(Math.Tan(_phiRad) / GammaM);
+            }
+        }
         public double PhiD
         {
             get
             {
-                return _phiD;
-                ;
-            }
-            private set
-            {
-                _phiD = value;
+                return ConvertRadiansToDegrees(PhiDRad);
             }
         }
 
-        public double K0 { get; private set; }
-        public double Ka { get; private set; }
-
-        private void updateProperties()
+        // Load factors
+        public double K0
         {
-            _phiRad = ConvertDegreesToRadians(_phi);
-            _phiDRad = Math.Atan(Math.Tan(_phiRad) / GammaM);
-            PhiD = ConvertRadiansToDegrees(_phiDRad);
-            K0 = 1 - Math.Sin(_phiDRad);
-            Ka = Math.Pow(Math.Tan(ConvertDegreesToRadians(45) - _phiDRad / 2), 2);
+            get
+            {
+                return 1 - Math.Sin(PhiDRad);
+            }
+        }
+        public double Ka
+        {
+            get
+            {
+                return Math.Pow(Math.Tan(ConvertDegreesToRadians(45) - PhiDRad / 2), 2);
+            }
         }
         
 
         // Constructor
         public EarthPressureModel()
         {
+            // Setup a basic calculation
+            GammaM = 1.3;
+            GammaRd = 1.0;
             Phi = 30;
+            _gammaWater = 10.0;
+            _uZ = 2;
+            _h = 4;
+            _q = 0;
+            _gammaPrime = 20;
+            _gammaPrimeU = 14;
         }
 
-        public double getLoadAtRest(double z)
+        public double GetLoad(double z)
         {
-            return getLoad(z, K0);
-        }
+            double load;
 
-        public double getActiveLoad(double z)
-        {
-            return getLoad(z, Ka);
-        }
+            double factor;
+            switch (SelectedLoadType)
+            {
+                case LOAD_TYPE.ACTIVE_LOAD:
+                    factor = Ka;
+                    break;
+                case LOAD_TYPE.LOAD_AT_REST:
+                    factor = K0;
+                    break;
+                default:
+                    factor = -1;
+                    break;
+            }
 
-        private double getLoad(double z, double factor)
-        {
-            double load = -1;
             if (z >= 0)
             {
                 // Above water
@@ -163,8 +191,6 @@ namespace EarthPressure.Model
 
             return load;
         }
-
-
 
         // Helper functions
         private static double ConvertDegreesToRadians (double degrees)

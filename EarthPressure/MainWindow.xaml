@@ -6,8 +6,113 @@
         xmlns:local="clr-namespace:EarthPressure"
         xmlns:views="clr-namespace:EarthPressure.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="900">
+        Title="MainWindow" 
+        SizeToContent="WidthAndHeight"
+        MinWidth="1000"
+        MinHeight="800"
+        WindowStyle="None"
+        StateChanged="Window_StateChanged"
+        AllowsTransparency="True"
+        Background="Transparent"
+        >
 
-    <views:EarthPressureView/>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="30" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
 
+    <Border Style="{StaticResource WindowMainPanelStyle}" MinWidth="1000" MinHeight="800">
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Height="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <Menu Grid.Column="0">
+                    <MenuItem Header="_File">
+                        <MenuItem Header="_Open" Command="{Binding LoadCommand}" />
+                        <MenuItem Header="_Save" Command="{Binding SaveCommand}" />
+                        <MenuItem Header="Save _As" Command="{Binding SaveAsCommand}"/>
+                        <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+                    </MenuItem>
+                    <MenuItem Header="_Print" />
+                </Menu>
+
+                <TextBlock
+		            Grid.Column="1"
+		            HorizontalAlignment="Center"
+		            VerticalAlignment="Center"
+		            FontSize="14"
+		            Text="EarthPressure">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
+                                    <Setter Property="Foreground" Value="{DynamicResource WindowTitleBarInactiveText}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <Button
+		            Grid.Column="2"
+		            Click="OnMinimizeButtonClick"
+		            RenderOptions.EdgeMode="Aliased"
+		            Style="{StaticResource TitleBarButtonStyle}">
+                    <Path
+			            Width="46"
+			            Height="32"
+			            Data="M 18,15 H 28"
+			            Stroke="{Binding Path=Foreground,
+							                RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+			            StrokeThickness="1" />
+                </Button>
+                <Button
+		            Name="maximizeButton"
+		            Grid.Column="3"
+		            Click="OnMaximizeButtonClick"
+		            Style="{StaticResource TitleBarButtonStyle}">
+                    <Path
+			            Width="46"
+			            Height="32"
+			            Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z"
+			            Stroke="{Binding Path=Foreground,
+							                RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+			            StrokeThickness="1" />
+                </Button>
+                <Button
+		            Name="restoreButton"
+		            Grid.Column="3"
+		            Click="OnMaximizeButtonClick"
+		            Style="{StaticResource TitleBarButtonStyle}">
+                    <Path
+			            Width="46"
+			            Height="32"
+			            Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5"
+			            Stroke="{Binding Path=Foreground,
+							                RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+			            StrokeThickness="1" />
+                </Button>
+                <Button
+		            Grid.Column="4"
+		            Click="OnCloseButtonClick"
+		            Style="{StaticResource TitleBarCloseButtonStyle}">
+                    <Path
+			            Width="46"
+			            Height="32"
+			            Data="M 18,11 27,20 M 18,20 27,11"
+			            Stroke="{Binding Path=Foreground,
+							                RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+			            StrokeThickness="1" />
+                </Button>
+            </Grid>
+
+            <views:EarthPressureView DockPanel.Dock="Bottom"/>
+
+        </DockPanel>
+    </Border>
 </Window>

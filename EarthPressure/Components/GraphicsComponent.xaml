@@ -4,9 +4,173 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EarthPressure.Components"
+             xmlns:math="clr-namespace:WpfMath.Controls;assembly=WpfMath"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="700" d:DesignWidth="800" d:Background="White">
+    
+    <!-- Drawing -->
+    <Canvas Width="550" Height="500" Margin="50 100">
+
+        <!-- Load on top -->
+        <Rectangle Width="380" Height="40" Stroke="Black" Canvas.Left="120" Canvas.Top="-50" StrokeThickness="1" Visibility="{Binding IsLoadOnTop, Converter={StaticResource VisibleOnTrueConverter}}">
+            <Rectangle.Fill>
+                <DrawingBrush TileMode="Tile" Stretch="None" Viewport="0,0,30,40" ViewportUnits="Absolute">
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Brush="LightBlue">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <LineGeometry StartPoint="0,0" EndPoint="0, 40" />
+                                    <LineGeometry StartPoint="0,40" EndPoint="5, 30" />
+                                    <LineGeometry StartPoint="0,40" EndPoint="-5, 30" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                            <GeometryDrawing.Pen>
+                                <Pen Thickness="1" Brush="Gray" />
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <math:FormulaControl Canvas.Top="-110" Canvas.Left="120" Width="380" HorizontalContentAlignment="Center" Formula="{Binding Q_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" Margin="0" Visibility="{Binding IsLoadOnTop, Converter={StaticResource VisibleOnTrueConverter}}">
+            <math:FormulaControl.RenderTransform>
+                <TransformGroup>
+                </TransformGroup>
+            </math:FormulaControl.RenderTransform>
+        </math:FormulaControl>
+
+        <!-- Soilline -->
+        <Line X1="120" X2="500" Y1="0" Y2="0" Stroke="Black" StrokeThickness="1" />
+        <Line X1="0" X2="100" Y1="500" Y2="500" Stroke="Black" StrokeThickness="1" />
+
+        <!-- Height dimension -->
+        <Canvas Canvas.Left="50" RenderTransformOrigin="0.5, 0.5">
+            <Line Canvas.Top="0" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="5" X2="25" Y1="5" Y2="-5" />
+            <Line Canvas.Top="0" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="0" X2="30" Y1="0" Y2="0" />
+            <Line Canvas.Top="0" Canvas.Left="15" Stroke="Black" StrokeThickness="1" X1="0" X2="0" Y1="0" Y2="500" />
+            <Line Canvas.Top="500" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="5" X2="25" Y1="5" Y2="-5" />
+            <Line Canvas.Top="500" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="0" X2="30" Y1="0" Y2="0" />
+
+            <math:FormulaControl Canvas.Top="0" Canvas.Left="-5" Width="500" HorizontalContentAlignment="Center" Formula="{Binding z_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" Margin="0">
+                <math:FormulaControl.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90" />
+                        <TranslateTransform Y="500" />
+                    </TransformGroup>
+                </math:FormulaControl.RenderTransform>
+            </math:FormulaControl>
+        </Canvas>
+
+        <!-- Uz dimension -->
+        <Canvas Canvas.Left="450" RenderTransformOrigin="0.5, 0.5" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}">
+            <Line Canvas.Top="0" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="5" X2="25" Y1="5" Y2="-5" />
+            <Line Canvas.Top="0" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="0" X2="30" Y1="0" Y2="0" />
+            <Line Canvas.Top="0" Canvas.Left="15" Stroke="Black" StrokeThickness="1" X1="0" X2="0" Y1="0" Y2="{Binding WaterLevelPosition}" />
+            <Line Canvas.Top="{Binding WaterLevelPosition}" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="5" X2="25" Y1="5" Y2="-5" />
+            <Line Canvas.Top="{Binding WaterLevelPosition}" Canvas.Left="0" Stroke="Black" StrokeThickness="1" X1="0" X2="30" Y1="0" Y2="0" />
+
+            <math:FormulaControl Canvas.Top="0" Width="{Binding WaterLevelPosition}" HorizontalContentAlignment="Center" Formula="{Binding Uz_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" Margin="0">
+                <math:FormulaControl.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90" />
+                        <TranslateTransform X="-5" Y="{Binding WaterLevelPosition}" />
+                    </TransformGroup>
+                </math:FormulaControl.RenderTransform>
+            </math:FormulaControl>
+        </Canvas>
+
+        <!-- Water line -->
+        <Line X1="120" X2="500" Y1="{Binding WaterLevelPosition}" Y2="{Binding WaterLevelPosition}" Stroke="Black" StrokeThickness="1" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}"/>
+        <Line X1="120" X2="500" Y1="{Binding WaterLevelPosition}" Y2="{Binding WaterLevelPosition}" Stroke="Black" StrokeThickness="1" StrokeDashArray="5 4" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}">
+            <Line.RenderTransform>
+                <TranslateTransform Y="3" />
+            </Line.RenderTransform>
+        </Line>
+
+        <!-- Wall Figure -->
+        <Rectangle Height="500" Width="20" Stroke="Black" Canvas.Left="100" Canvas.Top="0" StrokeThickness="1">
+            <Rectangle.Fill>
+                <DrawingBrush TileMode="Tile" Stretch="None" Viewport="0,0,20,20" ViewportUnits="Absolute">
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Brush="LightBlue">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <LineGeometry StartPoint="0,0" EndPoint="50, -50" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                            <GeometryDrawing.Pen>
+                                <Pen Thickness="1" Brush="Gray" />
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- Load Figure without water pressure -->
+        <Path StrokeMiterLimit="0" StrokeThickness="2" Stroke="Black" d:Data="M 0 0 l 50 500 l -50 0 Z" Data="{Binding LoadGeometryNoWater}" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnFalseConverter}}">
+            <Path.RenderTransform>
+                <TranslateTransform X="150" />
+            </Path.RenderTransform>
+            <RenderOptions.EdgeMode>Aliased</RenderOptions.EdgeMode>
+            <Path.Fill>
+                <DrawingBrush TileMode="Tile" Stretch="None" Viewport="0,0,100,30" ViewportUnits="Absolute">
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Brush="LightBlue">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <LineGeometry StartPoint="0,0" EndPoint="100, 0" />
+                                    <LineGeometry StartPoint="0,0" EndPoint="5, 5"/>
+                                    <LineGeometry StartPoint="0,0" EndPoint="5, -5"/>
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                            <GeometryDrawing.Pen>
+                                <Pen Thickness="1" Brush="Gray" />
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Path.Fill>
+        </Path>
+
+        <!-- Load figure with water pressure -->
+        <Path StrokeMiterLimit="0" StrokeThickness="2" Stroke="Black" Data="{Binding LoadGeometryWithWater}" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}">
+            <Path.RenderTransform>
+                <TranslateTransform X="150" />
+            </Path.RenderTransform>
+            <Path.Fill>
+                <DrawingBrush TileMode="Tile" Stretch="None" Viewport="0,0,100,30" ViewportUnits="Absolute">
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Brush="LightBlue">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <LineGeometry StartPoint="0,0" EndPoint="100, 0" />
+                                    <LineGeometry StartPoint="0,0" EndPoint="5, 5"/>
+                                    <LineGeometry StartPoint="0,0" EndPoint="5, -5"/>
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                            <GeometryDrawing.Pen>
+                                <Pen Thickness="1" Brush="Gray" />
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Path.Fill>
+        </Path>
+
+        <!-- Loads -->
+        <math:FormulaControl Canvas.Top="0" Canvas.Left="230" Formula="{Binding LoadAtTop_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
+        <math:FormulaControl Canvas.Top="{Binding WaterLevelPosition}" Canvas.Left="230" Formula="{Binding LoadAtWater_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}" RenderTransformOrigin="0.5,0.5" >
+            <math:FormulaControl.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-50"/>
+                </TransformGroup>
+            </math:FormulaControl.RenderTransform>
+        </math:FormulaControl>
+        <math:FormulaControl Canvas.Top="450" Canvas.Left="230" Formula="{Binding LoadAtBottom_Formula, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource Calculation}" />
+
+    </Canvas>
 </UserControl>
