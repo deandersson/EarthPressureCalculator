@@ -25,15 +25,19 @@ namespace EarthPressureCalculator.Commands
         public override void Execute(object? parameter)
         {
             OpenFileDialog openFileDialog= new OpenFileDialog();
+            openFileDialog.Filter = "Dec7 files (*.dec7)|*.dec7|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                using (FileStream fileStream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read))
+                string fileName = openFileDialog.FileName;
+                using (FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
                 {
                     using (XmlDictionaryReader reader = XmlDictionaryReader.CreateTextReader(fileStream, new XmlDictionaryReaderQuotas()))
                     {
                         DataContractSerializer serializer = new DataContractSerializer(typeof(EarthPressureModel));
                         EarthPressureModel model = (EarthPressureModel)serializer.ReadObject(reader, true);
                         _viewModel.SetModel(model);
+                        _viewModel.IsSaved = true;
+                        _viewModel.FileName = fileName;
                     }
                 }
             }

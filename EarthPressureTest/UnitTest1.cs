@@ -1,4 +1,7 @@
 
+using EarthPressure.Model;
+using Xunit;
+
 namespace EarthPressureTest
 {
     public class EarthPressureModelTest

@@ -7,6 +7,11 @@ namespace EarthPressure.Model
     public class EarthPressureModel
     {
         // Properties
+        [DataMember]
+        public string Name { get; set; }
+
+        [DataMember]
+        public string ProjectName { get; set; }
 
         [DataMember]
         public LOAD_TYPE SelectedLoadType;

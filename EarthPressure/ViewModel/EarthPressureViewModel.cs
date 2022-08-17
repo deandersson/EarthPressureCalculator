@@ -5,11 +5,13 @@ using System.Windows;
 using EarthPressure.Model;
 using EarthPressureCalculator.Commands;
 using System.Windows.Input;
+using System.Runtime.CompilerServices;
 
 namespace EarthPressure.ViewModel
 {
     public class EarthPressureViewModel : ViewModelBase
     {
+
 
         private EarthPressureModel _model;
 
@@ -17,17 +19,62 @@ namespace EarthPressure.ViewModel
         public ICommand SelectLoadAtRestCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand LoadCommand { get; }
+        public ICommand SaveAsCommand { get; }
+        public ICommand ExitCommand { get; }
+        public ICommand PrintCommand { get; }
 
-        
+        public string WindowTitle
+        {
+            get
+            {
+                if (FileName == null)
+                {
+                    return "Earthpressure: New file..";
+                }
+
+                return "EarthPressure: " + FileName + (IsSaved ? "" : "*"); 
+            }
+        }
+
+        private bool _isSaved;
+        public bool IsSaved
+        {
+            get
+            {
+                return _isSaved;
+            }
+            set
+            {
+                _isSaved = value;
+                OnPropertyChanged(nameof(WindowTitle));
+            }
+        }
+
+        private string? _fileName;
+        public string? FileName
+        {
+            get
+            {
+                return _fileName;
+            }
+            set
+            {
+                _fileName = value;
+                OnPropertyChanged(nameof(WindowTitle));
+            }
+        }
 
         public EarthPressureViewModel(EarthPressureModel model)
         {
+            _isSaved = false;
             _model = model;
             SelectActiveLoadCommand = new RelayCommand(SetActiveLoad);
             SelectLoadAtRestCommand = new RelayCommand(SetLoadAtRest);
-            SaveCommand = new SaveCommand(_model);
+            SaveCommand = new SaveCommand(this, _model, false);
             LoadCommand = new LoadCommand(this);
-            OnPropertyChanged(null);
+            SaveAsCommand = new SaveCommand(this, _model, true);
+            ExitCommand = new RelayCommand(Exit);
+            PrintCommand = new PrintCommand(this);
         }
 
         private void SetActiveLoad(object parameter) => SetLoadType(EarthPressureModel.LOAD_TYPE.ACTIVE_LOAD);
@@ -38,6 +85,11 @@ namespace EarthPressure.ViewModel
             OnPropertyChanged(null);
         }
 
+        private void Exit(object parameter)
+        {
+
+        }
+
         internal void SetModel(EarthPressureModel? model)
         {
             _model = model;
@@ -45,6 +97,28 @@ namespace EarthPressure.ViewModel
         }
 
         // Input data properties
+        public string Name
+        {
+            get
+            {
+                return _model.Name;
+            }
+            set
+            {
+                _model.Name = value;
+            }
+        }
+        public string ProjectName
+        {
+            get
+            {
+                return _model.ProjectName;
+            }
+            set
+            {
+                _model.ProjectName = value;
+            }
+        }
         public double GammaRd
         {
             get
@@ -54,6 +128,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.GammaRd = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }
@@ -66,6 +141,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.GammaM = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }
@@ -78,6 +154,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.H = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }
@@ -90,6 +167,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.Q = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }
@@ -102,6 +180,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.UZ = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }
@@ -114,6 +193,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.GammaPrime = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }
@@ -126,6 +206,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.GammaPrimeU = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }
@@ -138,6 +219,7 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.Phi = value;
+                IsSaved = false;
                 OnPropertyChanged(null);
             }
         }

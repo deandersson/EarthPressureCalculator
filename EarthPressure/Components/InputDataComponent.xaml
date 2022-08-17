@@ -11,6 +11,20 @@
     <!-- Input Data -->
     <StackPanel Orientation="Vertical">
 
+        <!-- Name -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <TextBlock Style="{StaticResource TextStyle}">Name</TextBlock>
+            <!--<math:FormulaControl Formula="Name" Style="{StaticResource FormulaStyle}"/>-->
+            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}" Width="200"/>
+        </StackPanel>
+
+        <!-- Project Name -->
+        <StackPanel Orientation="Horizontal" Height="35">
+            <TextBlock Style="{StaticResource TextStyle}">Project Name</TextBlock>
+            <!--<math:FormulaControl Formula="Project Name" Style="{StaticResource FormulaStyle}"/>-->
+            <TextBox Text="{Binding ProjectName, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N2}" Width="200"/>
+        </StackPanel>
+
         <!-- Gamma RD -->
         <StackPanel Orientation="Horizontal" Height="35">
             <math:FormulaControl Formula="\gamma_R_d" Style="{StaticResource FormulaStyle}"/>

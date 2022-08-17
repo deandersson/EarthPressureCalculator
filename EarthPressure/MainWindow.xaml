@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EarthPressure"
         xmlns:views="clr-namespace:EarthPressure.Views"
+        xmlns:components="clr-namespace:EarthPressure.Components"
         mc:Ignorable="d"
         Title="MainWindow" 
         SizeToContent="WidthAndHeight"
@@ -38,7 +39,7 @@
                         <MenuItem Header="Save _As" Command="{Binding SaveAsCommand}"/>
                         <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
                     </MenuItem>
-                    <MenuItem Header="_Print" />
+                    <MenuItem Header="_Print" Command="{Binding PrintCommand}" CommandParameter="{Binding ElementName=theView}" />
                 </Menu>
 
                 <TextBlock
@@ -46,7 +47,7 @@
 		            HorizontalAlignment="Center"
 		            VerticalAlignment="Center"
 		            FontSize="14"
-		            Text="EarthPressure">
+		            Text="{Binding WindowTitle}">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Style.Triggers>
@@ -111,7 +112,7 @@
                 </Button>
             </Grid>
 
-            <views:EarthPressureView DockPanel.Dock="Bottom"/>
+            <views:EarthPressureView DockPanel.Dock="Bottom" x:Name="theView"/>
 
         </DockPanel>
     </Border>
