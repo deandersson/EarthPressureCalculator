@@ -9,6 +9,7 @@ using System.Windows.Documents;
 using System.Windows.Controls;
 
 using EarthPressure.Components;
+using EarthPressureCalculator.Views;
 
 namespace EarthPressureCalculator.Commands
 {
@@ -28,11 +29,20 @@ namespace EarthPressureCalculator.Commands
 
             if (printDialog.ShowDialog() == true)
             {
-                //FlowDocument doc = new FlowDocument(new Paragraph(new Run("Hello world")));
-                //doc.Name = "FlowDoc";
-                //IDocumentPaginatorSource pageSource = doc;
-                //printDialog.PrintDocument(pageSource.DocumentPaginator, "Hello printing");
-                printDialog.PrintVisual((System.Windows.Media.Visual)parameter, "Hello printing");
+                FlowDocument doc = new FlowDocument();
+                doc.PagePadding = new System.Windows.Thickness(50);
+                doc.ColumnWidth = printDialog.PrintableAreaWidth;
+                doc.PageHeight = printDialog.PrintableAreaHeight;
+                doc.Blocks.Add(new BlockUIContainer(
+                    new PrintView()
+                    {
+                        DataContext = _vm
+                    }));
+                
+                doc.Name = "FlowDoc";
+                IDocumentPaginatorSource pageSource = doc;
+                printDialog.PrintDocument(pageSource.DocumentPaginator, "Earth pressure " + _vm.Name);
+                //printDialog.PrintVisual((System.Windows.Media.Visual)parameter, "Hello printing");
             }
             
         }

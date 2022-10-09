@@ -35,7 +35,7 @@ namespace EarthPressureCalculator.Commands
                     {
                         DataContractSerializer serializer = new DataContractSerializer(typeof(EarthPressureModel));
                         EarthPressureModel model = (EarthPressureModel)serializer.ReadObject(reader, true);
-                        _viewModel.SetModel(model);
+                        _viewModel.Model = model;
                         _viewModel.IsSaved = true;
                         _viewModel.FileName = fileName;
                     }

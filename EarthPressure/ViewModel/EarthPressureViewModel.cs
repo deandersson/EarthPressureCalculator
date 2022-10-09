@@ -5,7 +5,6 @@ using System.Windows;
 using EarthPressure.Model;
 using EarthPressureCalculator.Commands;
 using System.Windows.Input;
-using System.Runtime.CompilerServices;
 
 namespace EarthPressure.ViewModel
 {
@@ -22,6 +21,15 @@ namespace EarthPressure.ViewModel
         public ICommand SaveAsCommand { get; }
         public ICommand ExitCommand { get; }
         public ICommand PrintCommand { get; }
+
+        public string GetCurrentUser
+        {
+            get
+            {
+                string displayName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                return displayName;
+            }
+        }
 
         public string WindowTitle
         {
@@ -90,10 +98,17 @@ namespace EarthPressure.ViewModel
 
         }
 
-        internal void SetModel(EarthPressureModel? model)
+        public EarthPressureModel Model
         {
-            _model = model;
-            OnPropertyChanged(null);
+            get
+            {
+                return _model;
+            }
+            set
+            {
+                _model = value;
+                OnPropertyChanged(null);
+            }
         }
 
         // Input data properties
@@ -117,6 +132,19 @@ namespace EarthPressure.ViewModel
             set
             {
                 _model.ProjectName = value;
+            }
+        }
+        public double GammaW
+        {
+            get
+            {
+                return _model.GammaW;
+            }
+            set
+            {
+                _model.GammaW = value;
+                IsSaved = false;
+                OnPropertyChanged(null);
             }
         }
         public double GammaRd
@@ -285,6 +313,68 @@ namespace EarthPressure.ViewModel
         public string LoadAtBottom_Formula
         {
             get { return $"Q_H = {_model.GetLoad(_model.H):F3} kN/m^2"; }
+        }
+
+        public string SelectedKSymbol_Formula
+        {
+            get
+            
+            {
+                switch (_model.SelectedLoadType)
+                {
+                    case EarthPressureModel.LOAD_TYPE.ACTIVE_LOAD:
+                        return "K_a";
+                    case EarthPressureModel.LOAD_TYPE.LOAD_AT_REST:
+                        return "K_0";
+                    default:
+                        return "ERROR";
+                }
+            }
+            
+        }
+
+        public string InputData_Print_Formula
+        {
+            get
+            {
+                return $"\\gamma_R_d={GammaRd:F2}\\text{{    }}\\gamma_M={GammaM:F2}\\text{{    }}\\gamma'={GammaPrime}\\text{{    }}\\gamma'_u={GammaPrimeU}\\text{{    }}\\varphi={Phi:F3}\\text{{   }}q = {Q:F3}";
+            }
+        }
+        public string K_Print_Formula
+        {
+            get
+            {
+                switch (_model.SelectedLoadType)
+                {
+                    case EarthPressureModel.LOAD_TYPE.ACTIVE_LOAD:
+                        return $"K_a = tan \\left( 45 deg - \\frac{{\\varphi_d}}{{2}} \\right) = tan \\left( 45 deg - \\frac{{{_model.PhiD:F3}}}{{2}} \\right) = {_model.Ka:F3} \\text{{     (Active load)}}";
+                    case EarthPressureModel.LOAD_TYPE.LOAD_AT_REST:
+                        return $"K_0 = 1 - sin(\\varphi_d) = 1 - sin({_model.PhiD:F3}) = {_model.K0:F3} \\\\text{{     (Load at rest)}}\"";
+                    default:
+                        return "ERROR";
+                }
+            }
+        }
+        public string PhiD_Print_Formula
+        {
+            get { return $"\\varphi_d = atan \\left( \\frac{{tan(\\varphi)}}{{\\gamma_M}} \\right) = atan \\left( \\frac{{tan({_model.Phi:F3})}}{{{_model.GammaM:F3}}} \\right) = {_model.PhiD:F3} deg"; }
+        }
+        public string LoadAtTop_Print_Formula
+        {
+            get { return $"Q_0 = {SelectedKSymbol_Formula} * \\gamma' * z + {SelectedKSymbol_Formula} * q \\\\ \\text{{     }} = {_model.GetFactor():F3} * {GammaPrime:F2} * {H:F3} + {_model.GetFactor():F3} * {Q:F3} \\\\ \\text{{     }} = {_model.GetLoad(0):F3} kN/m^2"; }
+        }
+        public string LoadAtWater_Print_Formula
+        {
+            get { return $"Q_U_z = {SelectedKSymbol_Formula} * \\gamma' * z + {SelectedKSymbol_Formula} * q \\\\ \\text{{      }} = {_model.GetFactor():F3} * {GammaPrime:F2} * {H:F3} + {_model.GetFactor():F3} * {Q:F3} \\\\ \\text{{      }} = {_model.GetLoad(_model.UZ):F3} kN/m^2"; }
+
+        }
+        public string LoadAtBottomWithoutWater_Print_Formula
+        {
+            get { return $"Q_H = {SelectedKSymbol_Formula} * \\gamma' * z + {SelectedKSymbol_Formula} * q \\\\ \\text{{     }} = {_model.GetFactor():F3} * {GammaPrime:F2} * {H:F3} + {_model.GetFactor():F3} * {Q:F3} \\\\ \\text{{     }} = {_model.GetLoad(_model.H):F3} kN/m^2"; }
+        }
+        public string LoadAtBottomWithWater_Print_Formula
+        {
+            get { return $"Q_H = {SelectedKSymbol_Formula} * \\left( \\gamma' * U_z + \\gamma'_u * (z-U_z) + q \\right) + \\gamma_w * (z-U_z) \\\\ \\text{{     }} = {_model.GetFactor():F3} * \\left( {GammaPrime:F2} * {UZ:F3} + {GammaPrimeU:F2} * ({H:F3} - {UZ:F3} + {Q:F3}) \\right) + {GammaW:F1} * ({H:F3}-{UZ:F3}) \\\\ \\text{{     }} = {_model.GetLoad(_model.H):F3} kN/m^2"; }
         }
         #endregion
 

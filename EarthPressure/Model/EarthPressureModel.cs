@@ -31,7 +31,7 @@ namespace EarthPressure.Model
 
         // Materialdensities
         [DataMember]
-        private double _gammaWater;
+        public double GammaW { get; set; }
 
         [DataMember]
         private double _gammaPrime;
@@ -163,7 +163,7 @@ namespace EarthPressure.Model
             GammaM = 1.3;
             GammaRd = 1.0;
             Phi = 30;
-            _gammaWater = 10.0;
+            GammaW = 10.0;
             _uZ = 2;
             _h = 4;
             _q = 0;
@@ -171,23 +171,24 @@ namespace EarthPressure.Model
             _gammaPrimeU = 14;
         }
 
+        public double GetFactor()
+        {
+            switch (SelectedLoadType)
+            {
+                case LOAD_TYPE.ACTIVE_LOAD:
+                    return Ka;
+                case LOAD_TYPE.LOAD_AT_REST:
+                    return K0;
+                default:
+                    return -1;
+            }
+        }
+
         public double GetLoad(double z)
         {
             double load;
 
-            double factor;
-            switch (SelectedLoadType)
-            {
-                case LOAD_TYPE.ACTIVE_LOAD:
-                    factor = Ka;
-                    break;
-                case LOAD_TYPE.LOAD_AT_REST:
-                    factor = K0;
-                    break;
-                default:
-                    factor = -1;
-                    break;
-            }
+            double factor = GetFactor();
 
             if (z >= 0)
             {
@@ -200,7 +201,7 @@ namespace EarthPressure.Model
                 else
                 {
                     double loadAboveWater = factor * _gammaPrime * _uZ;
-                    double loadBelowWater = factor * _gammaPrimeU * (z - _uZ) + _gammaWater * (z - _uZ);
+                    double loadBelowWater = factor * _gammaPrimeU * (z - _uZ) + GammaW * (z - _uZ);
                     load = loadAboveWater + loadBelowWater + factor * _q;
                 } 
             } 

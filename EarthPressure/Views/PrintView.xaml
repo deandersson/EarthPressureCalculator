@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="EarthPressureCalculator.Views.PrintView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EarthPressureCalculator.Views"
+             xmlns:math="clr-namespace:WpfMath.Controls;assembly=WpfMath"
+             xmlns:components="clr-namespace:EarthPressure.Components"  
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:Background="White"
+             d:Padding="50"
+             >
+
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0">
+            <TextBlock DockPanel.Dock="Top" FontSize="20">Earth pressure</TextBlock>
+            <DockPanel DockPanel.Dock="Top">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Name: " />
+                    <TextBlock Text="{Binding Name}" d:Text="Test1" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Date: " />
+                    <TextBlock Text="{Binding Source={x:Static sys:DateTime.Today}, StringFormat='{}{0:yyyy-MM-dd}'}" />
+                </StackPanel>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="Project Name: " HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding ProjectName}" d:Text="Project1" HorizontalAlignment="Right"/>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Hidden">
+                    <TextBlock Text="Created by: " />
+                    <TextBlock Text="{Binding GetCurrentUser}" />
+                </StackPanel>
+            </DockPanel>
+            <Separator DockPanel.Dock="Bottom"/>
+        </DockPanel>
+
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0 10 0 10">
+            <math:FormulaControl Scale="15" d:Formula="\gamma_M \varphi"  Formula="{Binding InputData_Print_Formula}" Margin="0 5 5 5" VerticalAlignment="Center" />
+            <!--<math:FormulaControl Formula="\gamma_R_d=" Margin="0 5 5 5" VerticalAlignment="Center"/>
+            <math:FormulaControl Formula="{Binding GammaRd}" Margin="0 5 5 5" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding GammaRd}" d:Text="1.0" Margin="0 5 5 5" VerticalAlignment="Center"/>
+            <math:FormulaControl Formula="\gamma_M=" Margin="10 5 5 5" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding GammaM}" d:Text="1.0" Margin="0 5 5 5" VerticalAlignment="Center"/>
+            <math:FormulaControl Formula="\gamma'=" Margin="10 5 5 5" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding GammaPrime}" d:Text="1.0" Margin="0 5 5 5" VerticalAlignment="Center"/>
+            <math:FormulaControl Formula="\gamma'_u=" Margin="10 5 5 5" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding GammaPrimeU}" d:Text="1.0" Margin="0 5 5 5" VerticalAlignment="Center"/>
+            <math:FormulaControl Formula="\varphi=" Margin="10 5 5 5" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Phi}" d:Text="1.0" Margin="0 5 5 5" VerticalAlignment="Center"/>-->
+        </StackPanel>
+        
+        <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+
+            <math:FormulaControl Scale="15" Formula="{Binding PhiD_Print_Formula}" Margin="0 10 0 10" />
+            <math:FormulaControl Scale="15" Formula="{Binding K_Print_Formula}" Margin="0 10 0 10"/>
+            <math:FormulaControl Scale="15" Formula="{Binding LoadAtTop_Print_Formula}" Margin="0 10 0 10"/>
+            <math:FormulaControl Scale="15" Formula="{Binding LoadAtWater_Print_Formula}" Margin="0 10 0 10" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}" />
+            <math:FormulaControl Scale="15" Formula="{Binding LoadAtBottomWithoutWater_Print_Formula}" Margin="0 10 0 10" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnFalseConverter}}"/>
+            <math:FormulaControl Scale="15" Formula="{Binding LoadAtBottomWithWater_Print_Formula}" Margin="0 10 0 10" Visibility="{Binding IsWaterAboveBottom, Converter={StaticResource VisibleOnTrueConverter}}"/>
+
+
+        </StackPanel>
+        <Viewbox>
+            <components:GraphicsView/>
+        </Viewbox>
+
+    </DockPanel>
+</UserControl>

@@ -18,12 +18,12 @@
         >
 
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="30" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
     </WindowChrome.WindowChrome>
 
     <Border Style="{StaticResource WindowMainPanelStyle}" MinWidth="1000" MinHeight="800">
         <DockPanel>
-            <Grid DockPanel.Dock="Top" Height="30">
+            <Grid DockPanel.Dock="Top" Height="32">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*" />
